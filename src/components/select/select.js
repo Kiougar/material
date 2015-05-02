@@ -162,6 +162,7 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $interpolate, $compile,
       ngModel.$render = function() {
         originalRender();
         syncLabelText();
+        setAriaLabel();
       };
 
       var lineHeight;
@@ -198,6 +199,10 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $interpolate, $compile,
       };
 
       scope.$$postDigest(syncLabelText);
+
+      function setAriaLabel() {
+        element.attr('aria-label', labelEl.text());
+      }
 
       function syncLabelText() {
         if (selectContainer) {
@@ -258,8 +263,7 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $interpolate, $compile,
       element.attr({
         'role': 'combobox',
         'id': 'select_' + $mdUtil.nextUid(),
-        'aria-expanded': 'false',
-        'aria-labelledby': labelEl.attr('id')
+        'aria-expanded': 'false'
       });
 
       scope.$on('$destroy', function() {
@@ -760,7 +764,6 @@ function SelectProvider($$interimElementProvider) {
       return $mdUtil.transitionEndPromise(opts.selectEl, {timeout: 350});
 
       function configureAria() {
-        opts.selectEl.attr('aria-labelledby', opts.target.attr('id'));
         opts.target.attr('aria-expanded', 'true');
       }
 

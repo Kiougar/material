@@ -586,13 +586,29 @@ describe('<md-select-menu>', function() {
       selectMenus.remove();
     }));
 
-    it('sets up the aria-labeledby attribute', inject(function($document) {
-      openSelect(el);
-      var selectId = el.attr('id');
-      var selectMenu = $document.find('md-select-menu');
-      expect(selectId.length).toBeTruthy();
-      expect(selectMenu.attr('aria-labelledby')).toBe(selectId);
+    it('adds an aria-label from placeholder', function() {
+      var select = setupSelect('ng-model="someVal", placeholder="Hello world"');
+      expect(select.attr('aria-label')).toBe('Hello world');
+    });
+
+    it('adds an aria-label from label element', inject(function($rootScope, $compile) {
+      var select = $compile('<md-select ng-model="val">' +
+                              '<md-select-label>Pick</md-select-label>' +
+                              '<md-option value="1">One</md-option>' +
+                              '<md-option value="2">Two</md-option>' +
+                              '<md-option value="3">Three</md-option>' +
+                            '</md-select>')($rootScope);
+      $rootScope.$digest();
+      expect(select.attr('aria-label')).toBe('Pick');
     }));
+
+    it('preserves aria-label on value change', inject(function($rootScope) {
+      $rootScope.$apply('model = "b"');
+
+      var select = setupSelect('placeholder="Pick" ng-model="$root.model"', ['a','b','c']);
+      expect(select.attr('aria-label')).toBe('Pick');
+    }));
+
     it('sets up the aria-expanded attribute', inject(function($document) {
       expect(el.attr('aria-expanded')).toBe('false');
       openSelect(el);
